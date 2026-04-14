@@ -1,0 +1,35 @@
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "identity"
+      op: ">="
+      value: 70
+    - column: "positives"
+      op: ">="
+      value: 70
+
+recname_filters:
+  - keyword: "Kinase"
+    match: "partial"
+    case_sensitive: false
+    exclude: false
+  - keyword: "ABC transporter"
+    match: "exact"
+    case_sensitive: false
+    exclude: false
+  - keyword: "^ATP.*binding"
+    match: "regex"
+    case_sensitive: true
+    exclude: false
+  - keyword: "hypothetical protein"
+    match: "partial"
+    case_sensitive: false
+    exclude: true
+
+output:
+  fasta_file: "filtered_sequences.fasta"

@@ -1,0 +1,124 @@
+# Example 1: include + exclude (recommended)
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "identity"
+      op: ">="
+      value: 70
+    - column: "positives"
+      op: ">="
+      value: 70
+
+recname_filters:
+  # Include anything with channel/kinase
+  - keyword: "channel"
+    match: "partial"
+    case_sensitive: false
+    exclude: false
+  - keyword: "kinase"
+    match: "partial"
+    case_sensitive: false
+    exclude: false
+
+  # Exclude unwanted annotations
+  - keyword: "hypothetical protein"
+    match: "partial"
+    case_sensitive: false
+    exclude: true
+  - keyword: "partial"
+    match: "partial"
+    case_sensitive: false
+    exclude: true
+
+output:
+  fasta_file: "filtered_ex1.fasta"
+
+---
+# Example 2: exclude-only (keep everything except blacklist)
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "identity"
+      op: ">="
+      value: 50
+
+recname_filters:
+  - keyword: "unknown"
+    match: "partial"
+    case_sensitive: false
+    exclude: true
+  - keyword: "^uncharacterized"
+    match: "regex"
+    case_sensitive: false
+    exclude: true
+  - keyword: "predicted"
+    match: "startswith"
+    case_sensitive: false
+    exclude: true
+
+output:
+  fasta_file: "filtered_ex2.fasta"
+
+---
+# Example 3: exact include + regex exclude
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "identity"
+      op: ">="
+      value: 90
+
+recname_filters:
+  - keyword: "Potassium voltage-gated channel subfamily E member 1"
+    match: "exact"
+    case_sensitive: false
+    exclude: false
+  - keyword: "isoform\\s+\\d+"
+    match: "regex"
+    case_sensitive: false
+    exclude: true
+
+output:
+  fasta_file: "filtered_ex3.fasta"
+
+---
+# Example 4: case-sensitive regex exclusion
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "positives"
+      op: ">="
+      value: 80
+
+recname_filters:
+  - keyword: "KCNE1"
+    match: "partial"
+    case_sensitive: true
+    exclude: false
+  - keyword: "^KCNE1B\\b"
+    match: "regex"
+    case_sensitive: true
+    exclude: true
+
+output:
+  fasta_file: "filtered_ex4.fasta"
