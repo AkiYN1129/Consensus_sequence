@@ -63,7 +63,8 @@ def load_config(config_path: Path) -> Config:
     hit_table_files = input_block.get("hit_table_files", [])
     fullseq_files = input_block.get("fullseq_files", [])
     numeric_conditions = filters_block.get("numeric_conditions", [])
-    recname_filters = data.get("recname_filters", [])
+    # Backward-compatible: allow `recname_filters` at root or under `filters`.
+    recname_filters = filters_block.get("recname_filters", data.get("recname_filters", []))
     fasta_file = output_block.get("fasta_file")
 
     if not hit_table_files:
@@ -298,13 +299,26 @@ def filter_by_recname(
     subject_matched: Dict[str, List[Dict[str, str]]],
     recname_filters: List[Dict[str, Any]],
 ) -> List[Dict[str, str]]:
+    include_filters = [cond for cond in recname_filters if not bool(cond.get("exclude", False))]
+    exclude_filters = [cond for cond in recname_filters if bool(cond.get("exclude", False))]
+
     rows: List[Dict[str, str]] = []
     for entries in subject_matched.values():
         for item in entries:
             if not recname_filters:
                 rows.append(item)
                 continue
-            if any(match_recname(item["RecName"], cond) for cond in recname_filters):
+
+            # Exclude takes precedence when exclude=true condition matches.
+            if any(match_recname(item["RecName"], cond) for cond in exclude_filters):
+                continue
+
+            # If include filters are defined, at least one must match.
+            if include_filters:
+                if any(match_recname(item["RecName"], cond) for cond in include_filters):
+                    rows.append(item)
+            else:
+                # Only exclude filters were provided and none matched.
                 rows.append(item)
     return rows
 
