@@ -1,0 +1,28 @@
+input:
+  hit_table_files:
+    - "HsKCNE1_TM_nr_blastp_HitTable.txt"
+  fullseq_files:
+    - "HsKCNE1_TM_nr_blastp_FullSeq.txt"
+
+filters:
+  numeric_conditions:
+    - column: "identity"
+      op: ">="
+      value: 70
+    - column: "positives"
+      op: ">="
+      value: 70
+
+recname_filters:
+  - keyword: "Kinase"
+    match: "partial"
+    case_sensitive: false
+  - keyword: "ABC transporter"
+    match: "exact"
+    case_sensitive: false
+  - keyword: "^ATP.*binding"
+    match: "regex"
+    case_sensitive: true
+
+output:
+  fasta_file: "filtered_sequences.fasta"
