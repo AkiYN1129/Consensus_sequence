@@ -23,6 +23,11 @@ recname_filters:
   - keyword: "^ATP.*binding"
     match: "regex"
     case_sensitive: true
+  # exclude: true を付けると一致した RecName を出力対象から除外します
+  - keyword: "hypothetical protein"
+    match: "partial"
+    case_sensitive: false
+    exclude: true
 
 output:
   fasta_file: "filtered_sequences.fasta"
