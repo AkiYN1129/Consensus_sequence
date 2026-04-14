@@ -31,5 +31,6 @@ recname_filters:
     case_sensitive: false
     exclude: true
 
+
 output:
   fasta_file: "filtered_sequences.fasta"
